@@ -28,10 +28,11 @@ class Controller extends \Phalcon\Mvc\Controller
 
     public function returnJSON($response)
     {
-        $this->response->setContentType('application/json', 'UTF-8');
         $this->view->disable();
-        echo json_encode($response);
-        exit;
+
+        $this->response->setContentType('application/json', 'UTF-8');
+        $this->response->setContent(json_encode($response));
+        $this->response->send();
 
     }
 

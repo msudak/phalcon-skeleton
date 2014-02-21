@@ -14,4 +14,4 @@ $config = array(
     )
 );
 
-define('SERVER', $config[APPLICATION_ENV]['SERVER']);
+//define('SERVER', $config[APPLICATION_ENV]['SERVER']);

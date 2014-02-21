@@ -1,15 +1,11 @@
 <?php
 
-defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-
 chdir(dirname(__DIR__));
 
-if (APPLICATION_ENV == 'development') {
-    $appDir = __DIR__ . '/../app';
-} else {
-    $appDir = __DIR__ . '/../private/app';
-}
-define(APPLICATION_PATH, $appDir);
+defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
+
+define('APPLICATION_PATH', (APPLICATION_ENV == 'development') ? __DIR__ . '/../app' : __DIR__ . '/../private/app' );
+
 
 include APPLICATION_PATH . '/config/defines.php';
 

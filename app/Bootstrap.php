@@ -5,6 +5,8 @@
  * @copyright Copyright (c) 2011 - 2014 Aleksandr Torosh (http://wezoom.com.ua)
  * @author Aleksandr Torosh <webtorua@gmail.com>
  */
+use \Phalcon\Mvc\View;
+
 class Bootstrap
 {
 
@@ -16,14 +18,16 @@ class Bootstrap
         }
 
 
+        $di = new \Phalcon\DI\FactoryDefault();
+
+
         $config = include APPLICATION_PATH . '/config/application.php';
+        $di->set('config', $config);
 
 
         $loader = new \Phalcon\Loader();
         $loader->registerNamespaces($config->loader->namespaces->toArray());
-
-
-        $di = new \Phalcon\DI\FactoryDefault();
+        $loader->register();
 
 
         $db = new \Phalcon\Db\Adapter\Pdo\Mysql(array(
@@ -36,13 +40,17 @@ class Bootstrap
         $di->set('db', $db);
 
 
-        $view = new \Phalcon\Mvc\View();
+        $view = new View();
+        $view->disableLevel(array(
+            View::LEVEL_BEFORE_TEMPLATE => true,
+            View::LEVEL_LAYOUT          => true,
+            View::LEVEL_AFTER_TEMPLATE  => true
+        ));
 
-        $view->setLayoutsDir(APPLICATION_PATH . '/layouts/'); // директория с layout
-        $view->setPartialsDir(APPLICATION_PATH . '/partials/'); // директория с partial
-        $view->setLayout('main');
+        define('MAIN_VIEW_PATH', '../../../layouts/');
+        $view->setMainView(MAIN_VIEW_PATH . 'main');
 
-        $volt = new \Application\Mvc\ViewEngine\Volt($view, $di);
+        $volt = new \Application\Mvc\View\Engine\Volt($view, $di);
         $volt->setOptions(array('compiledPath' => APPLICATION_PATH . '/cache/volt/'));
         $volt->initCompiler();
 
@@ -57,11 +65,39 @@ class Bootstrap
         $url->setBaseUri('/');
 
 
-        $application = new \Phalcon\Mvc\Application($di);
+        $application = new \Phalcon\Mvc\Application();
+
+        $application->registerModules($config->modules->toArray());
 
 
-        $application->registerModules($config->modules);
+        $router = new \Application\Mvc\Router\DefaultRouter();
+        foreach ($application->getModules() as $module) {
+            $className = str_replace('Module', 'Routes', $module['className']);
+            if (class_exists($className)) {
+                $class  = new $className();
+                $router = $class->init($router);
+            }
+        }
+        $di->set('router', $router);
 
+        $eventsManager = new Phalcon\Events\Manager();
+
+        $eventsManager->attach("acl", function($event, $acl) {
+            if ($event->getType() == 'beforeCheckAccess') {
+                echo $acl->getActiveRole(),
+                $acl->getActiveResource(),
+                $acl->getActiveAccess();
+            }
+        });
+
+        $acl = new \Application\Acl\DefaultAcl();
+        $acl->setEventsManager($eventsManager);
+        $di->set('acl', $acl);
+
+        $di->set('helper', new \Application\Mvc\Helper());
+
+
+        $application->setDI($di);
 
         echo $application->handle()->getContent();
 

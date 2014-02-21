@@ -6,7 +6,7 @@ $env = array(
             'host'     => 'localhost',
             'username' => '',
             'password' => '',
-            'name'     => '',
+            'dbname'   => '',
             'charset'  => 'utf8',
         ),
     ),
@@ -15,7 +15,7 @@ $env = array(
             'host'     => 'localhost',
             'username' => 'root',
             'password' => '111',
-            'name'     => 'petroline',
+            'dbname'   => 'phalcon_skeleton',
             'charset'  => 'utf8',
         ),
     ),
@@ -25,6 +25,7 @@ $config = array(
     'loader'   => array(
         'namespaces' => array(
             'Application' => APPLICATION_PATH . '/modules/Application',
+            'Index'       => APPLICATION_PATH . '/modules/Index',
             'Admin'       => APPLICATION_PATH . '/modules/Admin',
         ),
     ),
@@ -33,10 +34,12 @@ $config = array(
             'className' => 'Index\Module',
             'path'      => APPLICATION_PATH . '/modules/Index/Module.php'
         ),
+        'admin' => array(
+            'className' => 'Admin\Module',
+            'path'      => APPLICATION_PATH . '/modules/Admin/Module.php'
+        ),
     ),
-    'database' => array(
-        $env[APPLICATION_ENV]['database'],
-    ),
+    'database' => $env[APPLICATION_ENV]['database'],
 );
 
 return new \Phalcon\Config($config);

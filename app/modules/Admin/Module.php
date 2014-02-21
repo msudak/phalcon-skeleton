@@ -1,6 +1,6 @@
 <?php
 
-namespace Index;
+namespace Admin;
 
 class Module
 {
@@ -13,7 +13,7 @@ class Module
     public function registerServices($di)
     {
         $dispatcher = $di->get('dispatcher');
-        $dispatcher->setDefaultNamespace("Index\Controller");
+        $dispatcher->setDefaultNamespace("Admin\Controller");
         $di->set('dispatcher', $dispatcher);
 
         /**
