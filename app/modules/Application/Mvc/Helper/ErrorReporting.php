@@ -18,10 +18,10 @@ class ErrorReporting extends \Phalcon\Mvc\User\Component
 
     }
 
-    public function error500()
+    public function error503()
     {
-        $this->getDi()->get('response')->setHeader(500, 'Internal Server Error');
-        include __DIR__ . '/../../../Index/views/error/500.phtml';
+        $this->getDi()->get('response')->setHeader(503, 'Service Unavailable');
+        include __DIR__ . '/../../../Index/views/error/503.phtml';
         exit;
 
     }

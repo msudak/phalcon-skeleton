@@ -28,6 +28,7 @@ class Bootstrap
         $loader = new \Phalcon\Loader();
         $loader->registerNamespaces($config->loader->namespaces->toArray());
         $loader->register();
+        $loader->registerDirs(array(APPLICATION_PATH . "/plugins/"));
 
 
         $db = new \Phalcon\Db\Adapter\Pdo\Mysql(array(
@@ -41,23 +42,32 @@ class Bootstrap
 
 
         $view = new View();
-        $view->disableLevel(array(
-            View::LEVEL_BEFORE_TEMPLATE => true,
-            View::LEVEL_LAYOUT          => true,
-            View::LEVEL_AFTER_TEMPLATE  => true
-        ));
+        /* $view->disableLevel(array(
+          View::LEVEL_BEFORE_TEMPLATE => true,
+          View::LEVEL_LAYOUT          => true,
+          View::LEVEL_AFTER_TEMPLATE  => true
+          )); */
 
-        define('MAIN_VIEW_PATH', '../../../layouts/');
+        define('MAIN_VIEW_PATH', '../../../views/');
         $view->setMainView(MAIN_VIEW_PATH . 'main');
+        $view->setLayoutsDir(MAIN_VIEW_PATH . '/layouts/');
+        $view->setPartialsDir(MAIN_VIEW_PATH . '/partials/');
 
         $volt = new \Application\Mvc\View\Engine\Volt($view, $di);
         $volt->setOptions(array('compiledPath' => APPLICATION_PATH . '/cache/volt/'));
         $volt->initCompiler();
 
-        $view->registerEngines(array(
+        $viewEngines = array(
             ".volt" => $volt,
-        ));
+        );
+
+        $view->registerEngines($viewEngines);
         $di->set('view', $view);
+
+
+        $viewSimple = new \Phalcon\Mvc\View\Simple();
+        $viewSimple->registerEngines($viewEngines);
+        $di->set('viewSimple', $viewSimple);
 
 
         $url = new \Phalcon\Mvc\Url();
@@ -80,7 +90,16 @@ class Bootstrap
         }
         $di->set('router', $router);
 
-        $eventsManager = new Phalcon\Events\Manager();
+        $eventsManager = new \Phalcon\Events\Manager();
+        $dispatcher    = new \Phalcon\Mvc\Dispatcher();
+
+        $eventsManager->attach("dispatch:beforeException", function($event, $dispatcher, $exception) {
+            new ExceptionPlugin($dispatcher, $exception);
+        });
+
+        $eventsManager->attach("dispatch:beforeDispatchLoop", function($event, $dispatcher) {
+            new LocalizationPlugin($dispatcher);
+        });
 
         $eventsManager->attach("acl", function($event, $acl) {
             if ($event->getType() == 'beforeCheckAccess') {
@@ -90,9 +109,23 @@ class Bootstrap
             }
         });
 
+        $dispatcher->setEventsManager($eventsManager);
+        $di->set('dispatcher', $dispatcher);
+
         $acl = new \Application\Acl\DefaultAcl();
         $acl->setEventsManager($eventsManager);
         $di->set('acl', $acl);
+
+        $assets = new \Phalcon\Assets\Manager();
+        $di->set('assets', $assets);
+
+        $flash = new \Phalcon\Flash\Session(array(
+            'error'   => 'alert alert-danger',
+            'success' => 'alert alert-success',
+            'notice'  => 'alert alert-info',
+            'warning' => 'alert alert-warning',
+        ));
+        $di->set('flash', $flash);
 
         $di->set('helper', new \Application\Mvc\Helper());
 

@@ -18,9 +18,9 @@ class ErrorController extends Controller
         $this->helper->error(404);
     }
 
-    public function error500Action()
+    public function error503Action()
     {
-        $this->helper->error(500);
+        $this->helper->error(503);
     }
 
 }
