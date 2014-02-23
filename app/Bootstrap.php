@@ -112,6 +112,10 @@ class Bootstrap
         $dispatcher->setEventsManager($eventsManager);
         $di->set('dispatcher', $dispatcher);
 
+        $session = new \Phalcon\Session\Adapter\Files();
+        $session->start();
+        $di->set('session', $session);
+
         $acl = new \Application\Acl\DefaultAcl();
         $acl->setEventsManager($eventsManager);
         $di->set('acl', $acl);

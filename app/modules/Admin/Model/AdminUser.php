@@ -9,6 +9,7 @@
 namespace Admin\Model;
 
 use Phalcon\Mvc\Model\Validator\Uniqueness;
+use stdClass;
 
 require_once __DIR__ . '/../../../../vendor/password.php';
 
@@ -30,15 +31,15 @@ class AdminUser extends \Phalcon\Mvc\Model
     public function validation()
     {
         $this->validate(new Uniqueness(
-            array(
-                "field"   => "email",
-                "message" => $this->getDi()->get('helper')->translate("The Email must be unique")
-            )
+                array(
+            "field"   => "email",
+            "message" => $this->getDi()->get('helper')->translate("The Email must be unique")
+                )
         ));
 
         return $this->validationHasFailed() != true;
-    }
 
+    }
 
     public function afterValidationOnUpdate()
     {
@@ -74,9 +75,25 @@ class AdminUser extends \Phalcon\Mvc\Model
 
     }
 
+    public function checkPassword($password)
+    {
+        if (password_verify($password, $this->password)) {
+            return true;
+        }
+
+    }
+
     public function getActive()
     {
         return $this->active;
+
+    }
+
+    public function isActive()
+    {
+        if ($this->active) {
+            return true;
+        }
 
     }
 
@@ -108,11 +125,22 @@ class AdminUser extends \Phalcon\Mvc\Model
 
     public function getPopulateData()
     {
-        $data = new \stdClass();
-        $data->login = $this->login;
-        $data->email = $this->email;
+        $data         = new \stdClass();
+        $data->login  = $this->login;
+        $data->email  = $this->email;
         $data->active = $this->active;
         return $data;
+
+    }
+
+    public function getAuthData()
+    {
+        $authData                = new stdClass();
+        $authData->admin_session = true;
+        $authData->login         = $this->login;
+        $authData->email         = $this->email;
+        return $authData;
+
     }
 
 }

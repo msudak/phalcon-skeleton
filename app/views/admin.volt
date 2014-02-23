@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{ helper.title().append('Admin panel') }}{{ helper.title().get() }}</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>{{ helper.title().append('Admin panel') }}{{ helper.title().get() }}</title>
 
         <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
@@ -19,7 +20,7 @@
     </head>
     <body>
         {{ partial('admin/nav') }}
-        <div class="container-fluid">
+        <div class="container">
             {% if title is defined %}
                 <h1>{{ title }}</h1>
             {% endif %}
