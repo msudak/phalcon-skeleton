@@ -1,8 +1,11 @@
 phalcon-skeleton
 ================
 
-Phalcon PHP Framework modular application with my best practices of development
+Phalcon PHP Framework __Modular application__ with my best practices of development.
 
+Installation
+--------
+Create MySQL tables:
 ```sql
 CREATE TABLE IF NOT EXISTS `admin_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
