@@ -3,6 +3,8 @@ phalcon-skeleton
 
 Phalcon PHP Framework __Modular application__ with my best practices of development.
 
+This application is under __development__.
+
 Installation
 --------
 Create MySQL tables:
