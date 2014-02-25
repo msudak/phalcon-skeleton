@@ -26,7 +26,17 @@ class AdminUser extends \Phalcon\Mvc\Model
     public $login;
     public $email;
     public $password;
-    public $active;
+    public $active = 0;
+
+    public function beforeValidation()
+    {
+        if (isset($_POST['active'])) {
+            $this->setActive(1);
+        } else {
+            $this->setActive(0);
+        }
+
+    }
 
     public function validation()
     {
@@ -38,16 +48,6 @@ class AdminUser extends \Phalcon\Mvc\Model
         ));
 
         return $this->validationHasFailed() != true;
-
-    }
-
-    public function afterValidationOnUpdate()
-    {
-        if (isset($_POST['active'])) {
-            $this->setActive(1);
-        } else {
-            $this->setActive(0);
-        }
 
     }
 

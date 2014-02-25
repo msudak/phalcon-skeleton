@@ -41,9 +41,7 @@ class AdminUserForm extends Form
         $password = new Password('password');
         $password->setLabel($this->helper->translate('Password'));
 
-        $active = new Check('active',array(
-
-        ));
+        $active = new Check('active');
         $active->setLabel($this->helper->translate('Active'));
 
         $submit = new Submit('submit', array(

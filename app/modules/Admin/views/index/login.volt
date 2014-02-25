@@ -21,10 +21,10 @@
         <div class="container">
             <form class="form-signin" role="form" action="/admin/index/login" method="post">
                 <h2 class="form-signin-heading">{{ translate('Admin panel') }}</h2>
+                {{ flash.output() }}
                 <input type="text" name="login" class="form-control" placeholder="{{ translate('Login') }}" required autofocus>
                 <input type="password" name="password" class="form-control" placeholder="{{ translate('Password') }}" required>
                 <button class="btn btn-lg btn-primary btn-block" type="submit">{{ translate('Sign in') }}</button>
-                {{ flash.output() }}
             </form>
         </div> <!-- /container -->
     </body>

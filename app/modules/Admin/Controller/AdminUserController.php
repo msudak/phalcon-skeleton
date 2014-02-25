@@ -44,7 +44,7 @@ class AdminUserController extends Controller
             $form->bind($this->request->getPost(), $model);
             if ($form->isValid()) {
                 if ($model->save()) {
-                    $this->flash->success('AdminUser was created');
+                    $this->flash->success($this->helper->translate('Administrator <b>%login%</b> created', array('login' => $model->getLogin())));
                     $this->response->redirect('admin/admin-user');
                     return $this->response->send();
                 } else {
@@ -75,7 +75,7 @@ class AdminUserController extends Controller
             $form->bind($this->request->getPost(), $model);
             if ($form->isValid()) {
                 if ($model->save() == true) {
-                    $this->flash->success($this->helper->translate('Administrator saved'));
+                    $this->flash->success($this->helper->translate('Administrator <b>%login%</b> saved', array('login' => $model->getLogin())));
                     $this->response->redirect('admin/admin-user');
                     return $this->response->send();
                 } else {
@@ -93,8 +93,30 @@ class AdminUserController extends Controller
         }
 
         $this->view->form = $form;
+        $this->view->model = $model;
 
         $this->view->title = $this->helper->translate('Edit Administrator');
+        $this->helper->title()->append($this->view->title);
+
+    }
+
+    public function deleteAction($id)
+    {
+        $model = AdminUser::findFirst("id = $id");
+        if (!$model) {
+            $this->response->redirect('admin/admin-user');
+            return $this->response->send();
+        }
+
+        if ($this->request->isPost()) {
+            $model->delete();
+            $this->flash->warning($this->helper->translate('Administrator <b>%login%</b> deleted', array('login' => $model->getLogin())));
+            $this->response->redirect('admin/admin-user');
+            return $this->response->send();
+        }
+
+        $this->view->model = $model;
+        $this->view->title = $this->helper->translate('Delete Administrator');
         $this->helper->title()->append($this->view->title);
 
     }
